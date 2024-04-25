@@ -30,5 +30,3 @@ const enviroment = {
 
 const env = process.env.NODE_ENV;
 module.exports = enviroment[env];
-
-console.log(enviroment[env]);
