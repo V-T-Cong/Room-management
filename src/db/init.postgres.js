@@ -1,8 +1,9 @@
 const { Client } = require('pg');
-const {db:{USERNAME, HOST, PORT, PASSWORD, DBNAME}} = require('../config/configPostgres')
-const { countConnect } = require('../helper/checkConnect');
+const {username, password, database, host, port} = require('../config/database')
+const { countConnect } = require('../helpers/checkConnect');
 
-const connectionString = `postgres://${USERNAME}:${PASSWORD}@${HOST}:${PORT}/${DBNAME}`;
+// create connection string
+const connectionString = `postgres://${username}:${password}@${host}:${port}/${database}`;
 
 const client = new Client({
     connectionString: connectionString,

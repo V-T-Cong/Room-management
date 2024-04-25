@@ -5,7 +5,6 @@ const morgan = require('morgan');
 require('dotenv').config();
 const app = express();
 
-
 //init middlewares
 app.use(morgan('dev'))
 app.use(helmet())
