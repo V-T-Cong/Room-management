@@ -1,5 +1,5 @@
 const { Client } = require('pg');
-const {username, password, database, host, port} = require('../config/database')
+const {development:{username, password, database, host, port}} = require('../config/config')
 const { countConnect } = require('../helpers/checkConnect');
 
 // create connection string
