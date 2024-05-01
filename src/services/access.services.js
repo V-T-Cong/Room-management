@@ -1,13 +1,14 @@
-const { User } = require('../db/models');
+const  {User}  = require('../db/models');
 
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const KeyTokenServices = require('./keyToken.services');
 const { CreateTokenPair } = require('../auth/authUtil');
+const { format } = require('path');
 
 
 class AccessService {
-    static signup = async ({ firstName, lastName, gender, email, password, phoneNumber, isActivate }) => {
+    static signup = async ({ firstName, lastName, gender, email, password, phonenumber, isActivate }) => {
         try {
             const HoldUser =  await User.findOne({ where: { email } });
     
@@ -26,20 +27,31 @@ class AccessService {
                 gender,
                 email,
                 password: passwordhash,
-                phoneNumber,
+                phonenumber,
                 isActivate
             });
     
             if (NewUser) {
                 // create privatekey and publickey
                 const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                    modulusLength: 4096
+                    modulusLength: 4096,
+
+                    // public Key CryptoGraphy Standards 
+                    publicKeyEncoding: {
+                        type: 'pkcs1',
+                        format: 'pem'
+                    },
+                    privateKeyEncoding: {
+                        type: 'pkcs1',
+                        format: 'pem'
+                    }
                 });
     
                 console.log({ privateKey, publicKey });
-    
+                
+                // save collection keyStore
                 const PublicKeyString = await KeyTokenServices.CreateKeyToken({
-                    UserId: NewUser._id,
+                    UserId: NewUser.id,
                     publicKey
                 });
     
@@ -49,9 +61,13 @@ class AccessService {
                         message: 'PublicKeyString error'
                     }
                 }
-    
+                
+                console.log('PublicKeyString::', PublicKeyString);
+                const publicKeyObject = crypto.createPublicKey(PublicKeyString);
+
+                console.log('publicKeyObject', publicKeyObject);
                 // created token pair
-                const tokens = await CreateTokenPair({ UserId: NewUser._id, email }, publicKey, privateKey);
+                const tokens = await CreateTokenPair({ UserId: NewUser.id, email }, publicKeyObject, privateKey);
                 console.log(`Created Token Success::`, tokens);
     
                 return {

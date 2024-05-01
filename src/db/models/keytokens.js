@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Keytokens.init({
     UserId: DataTypes.INTEGER,
-    publickey: DataTypes.STRING,
-    refreshToken: DataTypes.STRING
+    publickey: DataTypes.TEXT,
+    refreshToken: DataTypes.ARRAY(DataTypes.STRING),
   }, {
     sequelize,
     freezeTableName: true,

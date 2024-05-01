@@ -1,11 +1,15 @@
 'use strict';
-const { DataTypes } = require('sequelize');
-
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Keytoken', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+      },
       UserId: {
         type: Sequelize.INTEGER,
         references: {
@@ -14,11 +18,11 @@ module.exports = {
         }
       },
       publickey: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false
       },
       refreshToken: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: [],
       },
       createdAt: {
