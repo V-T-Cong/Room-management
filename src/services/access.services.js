@@ -1,16 +1,16 @@
-const  {User}  = require('../db/models');
+const db = require('../db/models/index');
 
 const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const KeyTokenServices = require('./keyToken.services');
 const { CreateTokenPair } = require('../auth/authUtil');
-const { format } = require('path');
+const { getInfoData } = require('../utils');
 
 
 class AccessService {
     static signup = async ({ firstName, lastName, gender, email, password, phonenumber, isActivate }) => {
         try {
-            const HoldUser =  await User.findOne({ where: { email } });
+            const HoldUser =  await db.User.findOne({ where: { email } });
     
             if (HoldUser) {
                 return {
@@ -21,7 +21,7 @@ class AccessService {
     
             const passwordhash = await bcrypt.hash(password, 10);
     
-            const NewUser = await User.create({
+            const NewUser = await db.User.create({
                 firstName,
                 lastName,
                 gender,
@@ -33,47 +33,51 @@ class AccessService {
     
             if (NewUser) {
                 // create privatekey and publickey
-                const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                    modulusLength: 4096,
+                // const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
+                //     modulusLength: 4096,
 
-                    // public Key CryptoGraphy Standards 
-                    publicKeyEncoding: {
-                        type: 'pkcs1',
-                        format: 'pem'
-                    },
-                    privateKeyEncoding: {
-                        type: 'pkcs1',
-                        format: 'pem'
-                    }
-                });
+                //     // public Key CryptoGraphy Standards 
+                //     publicKeyEncoding: {
+                //         type: 'pkcs1',
+                //         format: 'pem'
+                //     },
+                //     privateKeyEncoding: {
+                //         type: 'pkcs1',
+                //         format: 'pem'
+                //     }
+                // });
+
+                const privateKey = crypto.randomBytes(64).toString('hex');
+                const publicKey = crypto.randomBytes(64).toString('hex');
     
                 console.log({ privateKey, publicKey });
                 
                 // save collection keyStore
-                const PublicKeyString = await KeyTokenServices.CreateKeyToken({
+                const KeyStore = await KeyTokenServices.CreateKeyToken({
                     UserId: NewUser.id,
-                    publicKey
+                    publicKey,
+                    privateKey
                 });
     
-                if(!PublicKeyString) {
+                if(!KeyStore) {
                     return {
                         code: 'xxxx',
-                        message: 'PublicKeyString error'
+                        message: 'KeyStore error'
                     }
                 }
                 
-                console.log('PublicKeyString::', PublicKeyString);
-                const publicKeyObject = crypto.createPublicKey(PublicKeyString);
+                // console.log('PublicKeyString::', PublicKeyString);
+                // const publicKeyObject = crypto.createPublicKey(PublicKeyString);
+                // console.log('publicKeyObject', publicKeyObject);
 
-                console.log('publicKeyObject', publicKeyObject);
                 // created token pair
-                const tokens = await CreateTokenPair({ UserId: NewUser.id, email }, publicKeyObject, privateKey);
+                const tokens = await CreateTokenPair({ UserId: NewUser.id, email }, publicKey, privateKey);
                 console.log(`Created Token Success::`, tokens);
     
                 return {
                     code: 201,
                     metadata: {
-                        User: NewUser,
+                        User: getInfoData({ fields: ['id', 'name', 'email'], Object: NewUser}),
                         tokens
                     }
                 }

@@ -1,17 +1,18 @@
-const {KeyTokenModel} = require('../db/models/keytokens')
+const db = require('../db/models/index')
 
 class KeyTokenServices {
-    static CreateKeyToken = async({UserId, publicKey}) => {
+    static CreateKeyToken = async({UserId, publicKey, privateKey}) => {
 
         try {
-            const PublickeyString = publicKey.toString();
+            // const PublickeyString = publicKey.toString();
             
-            const Tokens = await KeyTokenModel.create({
+            const Tokens = await db.Keytoken.create({
                 UserId: UserId,
-                publickey: PublickeyString,
+                publickey: publicKey,
+                privatekey: privateKey
             });
 
-            return Tokens ? Tokens.Publickey : null;
+            return Tokens ? Tokens.publickey : null;
 
         } catch (error) {
             return error;

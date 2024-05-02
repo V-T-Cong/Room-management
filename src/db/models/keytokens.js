@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Keytokens.init({
     UserId: DataTypes.INTEGER,
-    publickey: DataTypes.TEXT,
+    publickey: DataTypes.STRING(1024),
+    privatekey: DataTypes.TEXT,
     refreshToken: DataTypes.ARRAY(DataTypes.STRING),
   }, {
     sequelize,

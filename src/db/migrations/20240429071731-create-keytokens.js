@@ -18,7 +18,11 @@ module.exports = {
         }
       },
       publickey: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING(1024),
+        allowNull: false
+      },
+      privatekey: {
+        type: Sequelize.STRING(1024),
         allowNull: false
       },
       refreshToken: {
