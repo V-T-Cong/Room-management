@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-	class Keytokens extends Model {
+	class ApiKeys extends Model {
 		/**
 		 * Helper method for defining associations.
 		 * This method is not a part of Sequelize lifecycle.
@@ -11,18 +11,29 @@ module.exports = (sequelize, DataTypes) => {
 			// define association here
 		}
 	}
-	Keytokens.init(
+	ApiKeys.init(
 		{
-			UserId: DataTypes.INTEGER,
-			publickey: DataTypes.STRING(1024),
-			privatekey: DataTypes.TEXT,
-			refreshToken: DataTypes.ARRAY(DataTypes.STRING),
+			key:{ 
+				type: DataTypes.STRING,
+				unique: true
+			},
+			status: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: true
+			},
+			permissions: {
+				type: DataTypes.ARRAY(DataTypes.STRING),
+				allowNull: false,
+				validate: {
+					isIn: [["0000", "1111", "2222"]],
+				},
+			},
 		},
 		{
 			sequelize,
 			freezeTableName: true,
-			modelName: "Keytoken",
+			modelName: "apiKey",
 		}
 	);
-	return Keytokens;
+	return ApiKeys;
 };
