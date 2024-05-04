@@ -1,3 +1,4 @@
+const { OK, CREATED } = require("../core/success.response");
 const user = require("../db/models/user");
 const AccessService = require("../services/access.services");
 
@@ -5,12 +6,14 @@ const AccessService = require("../services/access.services");
 class AccessController {
 
     signUp = async(req, res, next) => {
-        try {
-            console.log('[P]::signup::', req.body);
-            return res.status(201).json(await AccessService.signup(req.body));
-        } catch (error) {
-            next(error);
-        }
+        new CREATED({
+            message: 'Registered success!',
+            metadata: await AccessService.signUp(req.body),
+            options: {
+                limit: 10
+            }
+        }).send(res);
+
     }
 
 }

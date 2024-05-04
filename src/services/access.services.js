@@ -5,18 +5,16 @@ const crypto = require('node:crypto');
 const KeyTokenServices = require('./keyToken.services');
 const { CreateTokenPair } = require('../auth/authUtil');
 const { getInfoData } = require('../utils');
+const { BadRequestError, ConflictRequestError } = require('../core/error.response');
 
 
 class AccessService {
-    static signup = async ({ firstName, lastName, gender, email, password, phonenumber, isActivate }) => {
-        try {
+    static signUp = async ({ firstName, lastName, gender, email, password, phonenumber, isActivate }) => {
+        // try {
+            // check Email is exists
             const HoldUser =  await db.User.findOne({ where: { email } });
-    
             if (HoldUser) {
-                return {
-                    code: 'xxx',
-                    message: 'Email already used'
-                }
+                throw new BadRequestError('Error: User already registered!');
             }
     
             const passwordhash = await bcrypt.hash(password, 10);
@@ -32,20 +30,6 @@ class AccessService {
             });
     
             if (NewUser) {
-                // create privatekey and publickey
-                // const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                //     modulusLength: 4096,
-
-                //     // public Key CryptoGraphy Standards 
-                //     publicKeyEncoding: {
-                //         type: 'pkcs1',
-                //         format: 'pem'
-                //     },
-                //     privateKeyEncoding: {
-                //         type: 'pkcs1',
-                //         format: 'pem'
-                //     }
-                // });
 
                 const privateKey = crypto.randomBytes(64).toString('hex');
                 const publicKey = crypto.randomBytes(64).toString('hex');
@@ -66,11 +50,6 @@ class AccessService {
                     }
                 }
                 
-                // console.log('PublicKeyString::', PublicKeyString);
-                // const publicKeyObject = crypto.createPublicKey(PublicKeyString);
-                // console.log('publicKeyObject', publicKeyObject);
-
-                // created token pair
                 const tokens = await CreateTokenPair({ UserId: NewUser.id, email }, publicKey, privateKey);
                 console.log(`Created Token Success::`, tokens);
     
@@ -87,13 +66,13 @@ class AccessService {
                 code: 200,
                 metadata: null
             }
-        } catch (error) {
-            return {
-                code: 'xxx',
-                message: error.message,
-                status: 'error'
-            }
-        }
+        // } catch (error) {
+        //     return {
+        //         code: 'xxx',
+        //         message: error.message,
+        //         status: 'error'
+        //     }
+        // }
     }
 }
 

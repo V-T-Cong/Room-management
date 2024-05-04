@@ -4,15 +4,6 @@ const crypto = require('crypto');
 
 const findById = async(key) => {
     try {
-        // Generate a new key
-        // const newKey = await db.apiKey.create({
-        //     key: crypto.randomBytes(64).toString('hex'),
-        //     status: true,
-        //     permissions: ['0000']
-        // });
-        
-        // console.log('New API Key:', newKey);
-
         // Find the newly created key in the database
         const objKey = await db.apiKey.findOne({ where: { key, status: true} });
         return objKey;

@@ -11,7 +11,7 @@ const CreateTokenPair = async( PayLoad, publicKey, privateKey) => {
             expiresIn: '7 days'
         });
 
-        JWT.verify(AccessToken, PublicKey, (err, decode) => {
+        JWT.verify(AccessToken, publicKey, (err, decode) => {
             if(err) {
                 console.error('error verify::', err);
             }
@@ -21,6 +21,7 @@ const CreateTokenPair = async( PayLoad, publicKey, privateKey) => {
         })
 
         return {AccessToken, RefreshToken}
+
     } catch (error) {
         
     }
