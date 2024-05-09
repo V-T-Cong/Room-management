@@ -14,14 +14,15 @@ module.exports = (sequelize, DataTypes) => {
 	Keytokens.init(
 		{
 			UserId: DataTypes.INTEGER,
-			publickey: DataTypes.STRING(1024),
-			privatekey: DataTypes.TEXT,
-			refreshToken: DataTypes.ARRAY(DataTypes.STRING),
+			publickey: DataTypes.STRING(2048),
+			privatekey: DataTypes.STRING(2048),
+			refreshTokensUsed: DataTypes.ARRAY(DataTypes.STRING),
+			refreshToken: DataTypes.STRING(2048),
 		},
 		{
 			sequelize,
-			freezeTableName: true,
-			modelName: "Keytoken",
+			freezeTableName:true,
+			modelName: "keytokens",
 		}
 	);
 	return Keytokens;

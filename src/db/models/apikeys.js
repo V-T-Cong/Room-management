@@ -31,8 +31,8 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		{
 			sequelize,
-			freezeTableName: true,
-			modelName: "apiKey",
+			freezeTableName:true,
+			modelName: "apikeys",
 		}
 	);
 	return ApiKeys;

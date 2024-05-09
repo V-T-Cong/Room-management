@@ -21,12 +21,13 @@ module.exports = (sequelize, DataTypes) => {
 			email: DataTypes.STRING,
 			password: DataTypes.STRING,
 			phonenumber: DataTypes.STRING,
+			verify: DataTypes.BOOLEAN,
 			isActivate: DataTypes.BOOLEAN,
 		},
 		{
 			sequelize,
 			freezeTableName: true,
-			modelName: "User",
+			modelName: "users",
 		}
 	);
 	return User;

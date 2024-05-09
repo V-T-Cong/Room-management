@@ -1,17 +1,29 @@
-const JWT = require('jsonwebtoken')
+const JWT = require('jsonwebtoken');
+const { asyncHandler } = require('../helpers/asyncHandler');
+const { AuthFailureError, NotFoundError } = require('../core/error.response');
+const { findByUserId } = require('../services/keyToken.services');
+const e = require('express');
 
-const CreateTokenPair = async( PayLoad, publicKey, privateKey) => {
+const HEADER = {
+    API_KEY: 'x-api-key',
+    CLIENT_ID: 'x-client-id',
+    AUTHORIZATION: 'authorization'
+}
+
+const createTokenPair = async( PayLoad, publicKey, privateKey) => {
     try {
         // accessToken
-        const AccessToken = await JWT.sign(PayLoad, publicKey, {
-            expiresIn: '2 days'
+        const accessToken = await JWT.sign(PayLoad, privateKey, {
+            expiresIn: '2 days',
+            algorithm: 'RS256'
         });
 
-        const RefreshToken = await JWT.sign(PayLoad, privateKey, {
-            expiresIn: '7 days'
+        const refreshToken = await JWT.sign(PayLoad, privateKey, {
+            expiresIn: '7 days',
+            algorithm: 'RS256'
         });
 
-        JWT.verify(AccessToken, publicKey, (err, decode) => {
+        JWT.verify(accessToken, publicKey, (err, decode) => {
             if(err) {
                 console.error('error verify::', err);
             }
@@ -20,11 +32,36 @@ const CreateTokenPair = async( PayLoad, publicKey, privateKey) => {
             }
         })
 
-        return {AccessToken, RefreshToken}
+        return {accessToken, refreshToken}
 
     } catch (error) {
-        
+        console.log('createTokenPair::',error);
     }
 }
 
-module.exports = {CreateTokenPair}
+const authentication = asyncHandler(async(req, res, next) => {
+    const userId = req.headers[HEADER.CLIENT_ID];
+    if(!userId) throw new AuthFailureError('Invalid Request');
+
+
+    const keyStore = await findByUserId(userId);
+    if(!keyStore) throw new NotFoundError('Not Found keyStore');
+
+    console.log('KeyStore::',keyStore);
+    console.log('keyStore Publickey::', keyStore.publickey);
+
+    const accessToken = req.headers[HEADER.AUTHORIZATION];
+    if(!accessToken) throw new AuthFailureError('Invalid Request');
+
+    try {
+        const decodeUser = JWT.verify(accessToken, keyStore.publickey)
+        if (userId != decodeUser.UserId) throw new AuthFailureError('Invalid UserId');
+        req.keyStore = keyStore;
+        return next()
+    } catch (error) { 
+        console.log('error authen', error);
+        throw error
+    }
+})
+
+module.exports = {createTokenPair, authentication}
