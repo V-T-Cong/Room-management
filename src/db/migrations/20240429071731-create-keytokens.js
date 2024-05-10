@@ -26,7 +26,7 @@ module.exports = {
 				allowNull: false,
 			},
 			refreshTokensUsed: {
-				type: Sequelize.ARRAY(Sequelize.STRING),
+				type: Sequelize.ARRAY(Sequelize.STRING(2048)),
 				defaultValue: [],
 				get() {
 					// Ensure that even if Sequelize doesn't support default values for arrays,

@@ -1,18 +1,62 @@
 const db = require('../db/models/index');
 
+const {Sequelize} = require('sequelize')
 const bcrypt = require('bcrypt');
 const crypto = require('node:crypto');
 const KeyTokenServices = require('./keyToken.services');
-const { createTokenPair } = require('../auth/authUtil');
+const { createTokenPair, verifyJWT } = require('../auth/authUtil');
 const { getInfoData } = require('../utils');
-const { BadRequestError, ConflictRequestError, AuthFailureError } = require('../core/error.response');
+const { BadRequestError, AuthFailureError, ForbiddenError} = require('../core/error.response');
 
 // Services
 const { findByEmail } = require('./user.services');
+const { assignWith } = require('lodash');
+const { log } = require('node:console');
+const { where } = require('sequelize');
 
 
 class AccessService {
 
+    static handlerRefreshToken = async (refreshToken) => {
+        //  Check token has been used
+        const foundToken = await KeyTokenServices.findByRefreshTokenUsed(refreshToken);
+
+        //  if it used 
+        if(foundToken) {
+            //  decode to watch which is the token is using
+            const {UserId, email} = await verifyJWT(refreshToken, foundToken.privatekey);
+            console.log({UserId, email});
+            await KeyTokenServices.deleteKeyById(UserId);
+            throw new ForbiddenError('Something wrong happen !! Please reLogin')
+        }
+
+        const holderToken = await KeyTokenServices.findByRefreshToken(refreshToken);
+        if(!holderToken) throw new AuthFailureError('User not registered');
+
+        const {UserId, email} = await verifyJWT(refreshToken, holderToken.privatekey);
+        console.log('[2]--', {UserId, email});
+
+        const foundUser = await findByEmail({email});
+        if(!foundUser) throw new AuthFailureError('User not registered');
+
+        const tokens = await createTokenPair({ UserId: foundUser.id, email }, holderToken.publickey, holderToken.privatekey);
+
+        await db.keytokens.update({
+            refreshTokensUsed: [refreshToken.toString()],
+            refreshToken: tokens.refreshToken
+        },
+        {
+            where: {UserId: UserId}
+        })
+
+        return {
+            user: {UserId, email},
+            tokens
+        }
+    }
+
+
+    // LOGOUT
     static logout = async(keyStore) => {
         const delKey = await KeyTokenServices.removekeyById(keyStore.id);
         console.log({delKey});
@@ -108,8 +152,6 @@ class AccessService {
                     privateKey,
                     refreshToken: tokens.refreshToken
                 });
-    
-                console.log('New KeyStore::',KeyStore);
 
                 if(!KeyStore) {
                     return {

@@ -1,5 +1,6 @@
 const { raw } = require('express');
 const db = require('../db/models/index');
+const { Op } = require('sequelize');
 
 class KeyTokenServices {
     static createKeyToken = async({UserId, publicKey, privateKey, refreshToken}) => {
@@ -53,14 +54,26 @@ class KeyTokenServices {
         }
     }
 
-    static findByUserId = async(UserId) => {
+    static findByUserId = async(userId) => {
         return await db.keytokens.findOne({
-        where: {UserId: UserId},
+        where: {UserId: userId},
         raw: true});
     }
 
-    static removekeyById = async(UserId) => {
-        return await db.keytokens.destroy({where: {UserId: UserId}});
+    static removekeyById = async(userId) => {
+        return await db.keytokens.destroy({where: {UserId: userId}});
+    }
+    
+    static findByRefreshToken = async(refreshToken) => {
+        return await db.keytokens.findOne({where: {refreshToken: refreshToken}});
+    }
+
+    static findByRefreshTokenUsed = async(refreshToken) => {
+        return await db.keytokens.findOne({where: {refreshTokensUsed: {[Op.contains]: [refreshToken] }}});
+    }
+
+    static deleteKeyById = async(userId) => {
+        return await db.keytokens.destroy({where: {UserId: userId}});
     }
 }
 

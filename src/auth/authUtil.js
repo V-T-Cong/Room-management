@@ -47,8 +47,8 @@ const authentication = asyncHandler(async(req, res, next) => {
     const keyStore = await findByUserId(userId);
     if(!keyStore) throw new NotFoundError('Not Found keyStore');
 
-    console.log('KeyStore::',keyStore);
-    console.log('keyStore Publickey::', keyStore.publickey);
+    // console.log('KeyStore::',keyStore);
+    // console.log('keyStore Publickey::', keyStore.publickey);
 
     const accessToken = req.headers[HEADER.AUTHORIZATION];
     if(!accessToken) throw new AuthFailureError('Invalid Request');
@@ -64,4 +64,8 @@ const authentication = asyncHandler(async(req, res, next) => {
     }
 })
 
-module.exports = {createTokenPair, authentication}
+const verifyJWT = async(token, keySecret) => {
+    return await JWT.verify(token, keySecret)
+}
+
+module.exports = {createTokenPair, authentication, verifyJWT}
