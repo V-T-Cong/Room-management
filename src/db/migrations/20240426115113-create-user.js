@@ -9,10 +9,10 @@ module.exports = {
 				primaryKey: true,
 				type: Sequelize.INTEGER,
 			},
-			firstName: {
+			first_name: {
 				type: Sequelize.STRING,
 			},
-			lastName: {
+			last_name: {
 				type: Sequelize.STRING,
 			},
 			gender: {
@@ -24,14 +24,14 @@ module.exports = {
 			password: {
 				type: Sequelize.STRING,
 			},
-			phonenumber: {
+			phone_number: {
 				type: Sequelize.STRING,
 			},
 			verify: {
 				type: Sequelize.BOOLEAN,
 				defaultValue: false,
 			},
-			isActivate: {
+			is_activate: {
 				type: Sequelize.BOOLEAN,
 				defaultValue: true,
 			},

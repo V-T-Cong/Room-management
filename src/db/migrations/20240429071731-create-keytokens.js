@@ -3,29 +3,29 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
-		await queryInterface.createTable("keytokens", {
+		await queryInterface.createTable("key_tokens", {
 			id: {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
 				type: Sequelize.INTEGER,
 			},
-			UserId: {
+			user_id: {
 				type: Sequelize.INTEGER,
-				references: {
-					model: "users",
-					key: "id",
-				},
 			},
-			publickey: {
+			public_key: {
 				type: Sequelize.STRING(2048),
 				allowNull: false,
 			},
-			privatekey: {
+			private_key: {
 				type: Sequelize.STRING(2048),
 				allowNull: false,
 			},
-			refreshTokensUsed: {
+			refresh_tokens: {
+				type: Sequelize.STRING(2048),
+				allowNull: false,
+			},
+			refresh_tokens_used: {
 				type: Sequelize.ARRAY(Sequelize.STRING(2048)),
 				defaultValue: [],
 				get() {
@@ -34,10 +34,6 @@ module.exports = {
 					const rawValue = this.getDataValue('refreshTokensUsed');
 					return rawValue === null ? [] : rawValue;
 				},
-			},
-			refreshToken: {
-				type: Sequelize.STRING(2048),
-				allowNull: false,
 			},
 			createdAt: {
 				allowNull: false,
@@ -50,6 +46,6 @@ module.exports = {
 		});
 	},
 	async down(queryInterface, Sequelize) {
-		await queryInterface.dropTable("keytokens");
+		await queryInterface.dropTable("key_tokens");
 	},
 };

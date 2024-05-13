@@ -1,13 +1,12 @@
-const { raw } = require('express');
-const db = require('../db/models/index');
 const { Op } = require('sequelize');
+const keytokens = require('../db/models/KeyTokens');
 
 class KeyTokenServices {
     static createKeyToken = async({UserId, publicKey, privateKey, refreshToken}) => {
 
         try {
 
-            if(!refreshToken) {
+            // if(!refreshToken) {
 
                 // const PublickeyString = publicKey.toString();
                 
@@ -18,35 +17,36 @@ class KeyTokenServices {
                 // });
     
                 // return Tokens ? Tokens.publickey : null;
-            }
+            // }
 
-            let tokens = await db.keytokens.findOne({where: {UserId: UserId}});
+            let tokens = await keytokens.findOne({where: {user_id: UserId}});
 
             if (tokens) {
                 // If a key token exists, update its fields
-                tokens = await db.keytokens.update({
-                    publickey: publicKey,
-                    privatekey: privateKey,
-                    refreshTokensUsed: [],
-                    refreshToken: refreshToken
-                }, {
-                    where: {UserId: UserId}
+                tokens = await keytokens.update({
+                    public_key: publicKey,
+                    private_key: privateKey,
+                    refresh_tokens: refreshToken,
+                    refresh_tokens_used: [],
+                }, 
+                {
+                    where: {user_id: UserId}
                 }
             );
             } else {
                 // If no key token exists, create a new one
-                tokens = await db.keytokens.create({
-                    UserId: UserId,
-                    publickey: publicKey,
-                    privatekey: privateKey,
-                    refreshTokensUsed: [],
-                    refreshToken: refreshToken
+                tokens = await keytokens.create({
+                    user_id: UserId,
+                    public_key: publicKey,
+                    private_key: privateKey,
+                    refresh_tokens: refreshToken,
+                    refresh_tokens_used: [],
                 });
             }
 
             console.log('tokens create::',tokens);
 
-            return tokens ? tokens.publickey : null;
+            return tokens ? tokens.public_key : null;
 
         } catch (error) {
             console.log('createKeyToken error',error);
@@ -55,25 +55,25 @@ class KeyTokenServices {
     }
 
     static findByUserId = async(userId) => {
-        return await db.keytokens.findOne({
-        where: {UserId: userId},
+        return await keytokens.findOne({
+        where: {user_id: userId},
         raw: true});
     }
 
     static removekeyById = async(userId) => {
-        return await db.keytokens.destroy({where: {UserId: userId}});
+        return await keytokens.destroy({where: {user_id: userId}});
     }
     
     static findByRefreshToken = async(refreshToken) => {
-        return await db.keytokens.findOne({where: {refreshToken: refreshToken}});
+        return await keytokens.findOne({where: {refresh_tokens: refreshToken}});
     }
 
     static findByRefreshTokenUsed = async(refreshToken) => {
-        return await db.keytokens.findOne({where: {refreshTokensUsed: {[Op.contains]: [refreshToken] }}});
+        return await keytokens.findOne({where: {refresh_tokens_used: {[Op.contains]: [refreshToken] }}});
     }
 
     static deleteKeyById = async(userId) => {
-        return await db.keytokens.destroy({where: {UserId: userId}});
+        return await keytokens.destroy({where: {user_id: userId}});
     }
 }
 

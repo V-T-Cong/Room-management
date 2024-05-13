@@ -15,9 +15,14 @@ app.use(express.urlencoded({
 }));
 
 // init database
-require('./db/init.postgres')
-// const { checkOverload } = require('./helper/checkConnect')
+//require('./db/init.postgres')
+// const { checkOverload ,countConnect} = require('./helpers/checkConnectNew')
+// countConnect()
 // checkOverload()
+
+const {countConnect, checkOverload} = require('./helpers/checkConnectNew');
+countConnect();
+// checkOverload();
 
 // init routes 
 app.use('', require('./routes'))

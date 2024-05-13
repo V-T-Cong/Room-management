@@ -1,29 +1,48 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-	class Keytokens extends Model {
-		/**
-		 * Helper method for defining associations.
-		 * This method is not a part of Sequelize lifecycle.
-		 * The `models/index` file will call this method automatically.
-		 */
-		static associate(models) {
-			// define association here
-		}
-	}
-	Keytokens.init(
-		{
-			UserId: DataTypes.INTEGER,
-			publickey: DataTypes.STRING(2048),
-			privatekey: DataTypes.STRING(2048),
-			refreshTokensUsed: DataTypes.ARRAY(DataTypes.STRING),
-			refreshToken: DataTypes.STRING(2048),
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../../config/database");
+
+const keyToken = sequelize.define("key_tokens", {
+	id: {
+		allowNull: false,
+		autoIncrement: true,
+		primaryKey: true,
+		type: Sequelize.INTEGER,
+	},
+	user_id: {
+		type: Sequelize.INTEGER,
+	},
+	public_key: {
+		type: Sequelize.STRING(2048),
+		allowNull: false,
+	},
+	private_key: {
+		type: Sequelize.STRING(2048),
+		allowNull: false,
+	},
+	refresh_tokens: {
+	type: Sequelize.STRING(2048),
+	allowNull: false,
+	},
+	refresh_tokens_used: {
+		type: Sequelize.ARRAY(Sequelize.STRING(2048)),
+		defaultValue: [],
+		get() {
+			const rawValue = this.getDataValue("refreshTokensUsed");
+			return rawValue === null ? [] : rawValue;
 		},
-		{
-			sequelize,
-			freezeTableName:true,
-			modelName: "keytokens",
-		}
-	);
-	return Keytokens;
-};
+	},
+	createdAt: {
+		allowNull: false,
+		type: Sequelize.DATE,
+	},
+	updatedAt: {
+		allowNull: false,
+		type: Sequelize.DATE,
+	},
+}, 
+{
+	sequelize,
+	freezeTableName:true,
+});
+
+module.exports = keyToken;

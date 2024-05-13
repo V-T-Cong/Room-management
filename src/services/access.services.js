@@ -1,31 +1,27 @@
-const db = require('../db/models/index');
-
-const {Sequelize} = require('sequelize')
 const bcrypt = require('bcrypt');
 const crypto = require('node:crypto');
+const users = require('../db/models/User')
+const { getInfoData } = require('../utils');
+const keytokens = require('../db/models/KeyTokens');
 const KeyTokenServices = require('./keyToken.services');
 const { createTokenPair, verifyJWT } = require('../auth/authUtil');
-const { getInfoData } = require('../utils');
 const { BadRequestError, AuthFailureError, ForbiddenError} = require('../core/error.response');
 
 // Services
 const { findByEmail } = require('./user.services');
-const { assignWith } = require('lodash');
-const { log } = require('node:console');
-const { where } = require('sequelize');
 
 
 class AccessService {
 
-    static handlerRefreshToken = async (refreshToken) => {
+    static handleRefreshToken = async (refreshToken) => {
         //  Check token has been used
         const foundToken = await KeyTokenServices.findByRefreshTokenUsed(refreshToken);
-
+        console.log('FoundToken:: ', foundToken);
         //  if it used 
         if(foundToken) {
             //  decode to watch which is the token is using
-            const {UserId, email} = await verifyJWT(refreshToken, foundToken.privatekey);
-            console.log({UserId, email});
+            const {user_id, email} = await verifyJWT(refreshToken, foundToken.privatekey);
+            console.log({user_id, email});
             await KeyTokenServices.deleteKeyById(UserId);
             throw new ForbiddenError('Something wrong happen !! Please reLogin')
         }
@@ -33,24 +29,28 @@ class AccessService {
         const holderToken = await KeyTokenServices.findByRefreshToken(refreshToken);
         if(!holderToken) throw new AuthFailureError('User not registered');
 
-        const {UserId, email} = await verifyJWT(refreshToken, holderToken.privatekey);
-        console.log('[2]--', {UserId, email});
+        console.log('Holder Token:: ', holderToken);
+
+        const {user_id, email} = await verifyJWT(refreshToken, holderToken.private_key);
+        console.log('[2]--', {user_id, email});
 
         const foundUser = await findByEmail({email});
         if(!foundUser) throw new AuthFailureError('User not registered');
 
-        const tokens = await createTokenPair({ UserId: foundUser.id, email }, holderToken.publickey, holderToken.privatekey);
+        console.log('foundUser:: ', foundUser);
 
-        await db.keytokens.update({
-            refreshTokensUsed: [refreshToken.toString()],
-            refreshToken: tokens.refreshToken
+        const tokens = await createTokenPair({ user_id: foundUser.id, email }, holderToken.public_key, holderToken.private_key);
+
+        await keytokens.update({
+            refresh_tokens: tokens.refreshToken,
+            refresh_tokens_used: [refreshToken.toString()],
         },
         {
-            where: {UserId: UserId}
+            where: {user_id: user_id}
         })
 
         return {
-            user: {UserId, email},
+            user: {user_id, email},
             tokens
         }
     }
@@ -89,17 +89,17 @@ class AccessService {
             }
         });
         // 4. generate tokens
-        const tokens = await createTokenPair({ UserId: foundUser.id, email }, publicKey, privateKey);
+        const tokens = await createTokenPair({ user_id: foundUser.id, email }, publicKey, privateKey);
 
         await KeyTokenServices.createKeyToken({
             UserId: foundUser.id,
-            privateKey,
             publicKey,
-            refreshToken: tokens.refreshToken,
+            privateKey,
+            refreshToken: tokens.refreshToken
         });
 
         return {
-            User: getInfoData({ fields: ['id', 'firstName', 'email'], Object: foundUser }),
+            User: getInfoData({ fields: ['id', 'first_name', 'email'], Object: foundUser }),
             tokens
         }
     }
@@ -109,21 +109,21 @@ class AccessService {
     static signUp = async ({ firstName, lastName, gender, email, password, phonenumber, isActivate }) => {
         // try {
             // check Email is exists
-            const HoldUser =  await db.users.findOne({ where: { email } });
+            const HoldUser =  await users.findOne({ where: { email } });
             if (HoldUser) {
                 throw new BadRequestError('Error: User already registered!');
             }
     
             const passwordhash = await bcrypt.hash(password, 10);
     
-            const NewUser = await db.users.create({
-                firstName,
-                lastName,
-                gender,
-                email,
+            const NewUser = await users.create({
+                first_name: firstName,
+                last_name: lastName,
+                gender: gender,
+                email: email,
                 password: passwordhash,
-                phonenumber,
-                isActivate
+                phone_number: phonenumber,
+                is_activate: isActivate
             });
     
             if (NewUser) {
@@ -142,7 +142,7 @@ class AccessService {
     
                 console.log({ privateKey, publicKey });
 
-                const tokens = await createTokenPair({ UserId: NewUser.id, email }, publicKey, privateKey);
+                const tokens = await createTokenPair({ user_id: NewUser.id, email }, publicKey, privateKey);
                 console.log(`Created Token Success::`, tokens);
 
                 // save collection keyStore

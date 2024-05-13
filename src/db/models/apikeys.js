@@ -1,39 +1,38 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-	class ApiKeys extends Model {
-		/**
-		 * Helper method for defining associations.
-		 * This method is not a part of Sequelize lifecycle.
-		 * The `models/index` file will call this method automatically.
-		 */
-		static associate(models) {
-			// define association here
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../../config/database");
+
+module.exports = sequelize.define("api_keys", {
+	id: {
+		allowNull: false,
+		autoIncrement: true,
+		primaryKey: true,
+		type: Sequelize.INTEGER
+	},
+	key: {
+		type: Sequelize.STRING,
+		unique: true
+	},
+	status: {
+		type: Sequelize.BOOLEAN,
+		default: true
+	},
+	permissions: {
+		type: Sequelize.ARRAY(Sequelize.STRING),
+		allowNull: false,
+		validate: {
+			isIn: [['0000', '1111', '2222']]
 		}
+	},
+	createdAt: {
+		allowNull: false,
+		type: Sequelize.DATE
+	},
+	updatedAt: {
+		allowNull: false,
+		type: Sequelize.DATE
 	}
-	ApiKeys.init(
-		{
-			key:{ 
-				type: DataTypes.STRING,
-				unique: true
-			},
-			status: {
-				type: DataTypes.BOOLEAN,
-				defaultValue: true
-			},
-			permissions: {
-				type: DataTypes.ARRAY(DataTypes.STRING),
-				allowNull: false,
-				validate: {
-					isIn: [["0000", "1111", "2222"]],
-				},
-			},
-		},
-		{
-			sequelize,
-			freezeTableName:true,
-			modelName: "apikeys",
-		}
-	);
-	return ApiKeys;
-};
+},
+{
+	sequelize,
+	freezeTableName:true,
+});
