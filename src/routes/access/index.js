@@ -1,8 +1,8 @@
 const express = require('express');
-const accessController = require('../../controller/access.controller');
 const router = express.Router();
 const {asyncHandler} = require('../../helpers/asyncHandler');
 const { authentication } = require('../../auth/authUtil');
+const accessController = require('../../controller/access.controller');
 
 
 router.post('/3Bros/signup', asyncHandler(accessController.signUp));

@@ -1,6 +1,6 @@
 const express = require('express');
-const { apiKey, checkPermission } = require('../auth/CheckAuth');
 const router = express.Router();
+const { apiKey, checkPermission } = require('../auth/CheckAuth');
 
 // check apikey
 // router.use(apiKey);
@@ -9,5 +9,6 @@ const router = express.Router();
 
 // access
 router.use('/v1/api', require('./access'));
+router.use('/v2/api', require('./room'))
 
 module.exports = router;    

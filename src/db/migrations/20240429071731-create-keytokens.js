@@ -12,6 +12,12 @@ module.exports = {
 			},
 			user_id: {
 				type: Sequelize.INTEGER,
+				references: {
+					model: {
+						tableName: 'users',
+					},
+					key: 'id'
+				},
 			},
 			public_key: {
 				type: Sequelize.STRING(2048),

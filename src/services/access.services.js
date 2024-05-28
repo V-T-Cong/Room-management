@@ -22,22 +22,18 @@ class AccessService {
             //  decode to watch which is the token is using
             const {user_id, email} = await verifyJWT(refreshToken, foundToken.privatekey);
             console.log({user_id, email});
-            await KeyTokenServices.deleteKeyById(UserId);
+            await KeyTokenServices.deleteKeyById(user_id);
             throw new ForbiddenError('Something wrong happen !! Please reLogin')
         }
 
         const holderToken = await KeyTokenServices.findByRefreshToken(refreshToken);
         if(!holderToken) throw new AuthFailureError('User not registered');
 
-        console.log('Holder Token:: ', holderToken);
-
         const {user_id, email} = await verifyJWT(refreshToken, holderToken.private_key);
         console.log('[2]--', {user_id, email});
 
         const foundUser = await findByEmail({email});
         if(!foundUser) throw new AuthFailureError('User not registered');
-
-        console.log('foundUser:: ', foundUser);
 
         const tokens = await createTokenPair({ user_id: foundUser.id, email }, holderToken.public_key, holderToken.private_key);
 
