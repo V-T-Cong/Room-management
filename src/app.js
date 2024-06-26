@@ -1,31 +1,33 @@
+require('dotenv').config({ path: '.env' });
+
+const morgan = require('morgan');
+const express = require('express');
 const {default:helmet} = require('helmet');
 const compression = require('compression');
-const express = require('express');
-const morgan = require('morgan');
-require('dotenv').config();
+const sessionMiddleware = require('./middleware/session');
+
 const app = express();
 
 //init middlewares
-app.use(morgan('dev'));
 app.use(helmet());
+app.use(morgan('dev'));
 app.use(compression());
 app.use(express.json());
+// app.use(sessionMiddleware);
 app.use(express.urlencoded({
     extended: true,
 }));
 
-// init database
-//require('./db/init.postgres')
-// const { checkOverload ,countConnect} = require('./helpers/checkConnectNew')
-// countConnect()
-// checkOverload()
+app.set('view engine', 'ejs');
 
 const {countConnect, checkOverload} = require('./helpers/checkConnectNew');
 countConnect();
 // checkOverload();
 
+
 // init routes 
 app.use('', require('./routes'))
+
 
 // handling error
 app.use((res, req, next) => {

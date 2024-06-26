@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../../config/database");
 
-const Room = sequelize.define("Rooms", {
+const Room = sequelize.define("rooms", {
 	room_id: {
 		allowNull: false,
 		autoIncrement: true,

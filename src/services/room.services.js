@@ -1,3 +1,4 @@
+const { read } = require('fs');
 const { BadRequestError } = require('../core/error.response');
 const Room = require('../db/models/Room');
 
@@ -130,6 +131,29 @@ class RoomServices {
                 message: 'Room successfully deleted!'
             }
         };
+    }
+
+    static findRoom = async(roomNumber) => {
+        return await Room.findOne(
+            {where: {room_number: roomNumber}}
+        )
+    }
+
+    static checkRoomActivate = async(roomNumber) => {
+        if (!roomNumber) {
+            throw new BadRequestError('Room number must be provided!');
+        }
+
+        const room = await Room.findOne({
+            where: { room_number: roomNumber },
+            raw: true
+        });
+
+        if (!room) {
+            throw new NotFoundError('Room not found!');
+        }
+
+        return room.is_avaiable;
     }
 }
 

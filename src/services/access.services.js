@@ -67,7 +67,7 @@ class AccessService {
         const foundUser = await findByEmail({email});
         if(!foundUser) throw new BadRequestError("User hasn't been registed");
 
-        console.log('User::', foundUser);
+        // console.log('User::', foundUser);
         // 2. Check password
         const match = bcrypt.compare(password, foundUser.password);
         if(!match) throw new AuthFailureError('Authentication error');
@@ -155,8 +155,7 @@ class AccessService {
                         message: 'KeyStore error'
                     }
                 }
-                
-    
+
                 return {
                     code: 201,
                     metadata: {

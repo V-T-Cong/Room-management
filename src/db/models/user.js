@@ -1,8 +1,9 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../../config/database");
-const keyTokens = require("./KeyTokens");
+const KeyTokens = require("./KeyTokens");
+const Session = require("./session");
 
-const user = sequelize.define("users", {
+const User = sequelize.define("users", {
 	id: {
 		allowNull: false,
 		autoIncrement: true,
@@ -49,7 +50,10 @@ const user = sequelize.define("users", {
 	freezeTableName:true,
 });
 
-user.hasOne(keyTokens, {foreignKey: 'user_id'});
-keyTokens.belongsTo(user, {foreignKey: 'user_id'});
+User.hasOne(KeyTokens, {foreignKey: 'user_id'});
+KeyTokens.belongsTo(User, {foreignKey: 'user_id'});
 
-module.exports = user;
+User.hasOne(Session, {foreignKey: 'user_id'});
+Session.belongsTo(User, {foreignKey: 'user_id'});
+
+module.exports = User;
