@@ -35,7 +35,7 @@ module.exports = {
 				first_name: 'Luka',
 				last_name: 'Modrić ',
 				gender: 'male',
-				email: '	@gmail.com',
+				email: 'LukaModrić@gmail.com',
 				password: '123456',
 				phone_number: '0902390458',
 				verify: true,

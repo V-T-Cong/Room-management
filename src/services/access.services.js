@@ -9,6 +9,7 @@ const { BadRequestError, AuthFailureError, ForbiddenError} = require('../core/er
 
 // Services
 const { findByEmail } = require('./user.services');
+const { createStripeCustomerId } = require('./stripe.services');
 
 
 class AccessService {
@@ -51,6 +52,7 @@ class AccessService {
         }
     }
 
+    
 
     // LOGOUT
     static logout = async(keyStore) => {
@@ -102,23 +104,28 @@ class AccessService {
 
 
     // SIGNUP
-    static signUp = async ({ firstName, lastName, gender, email, password, phonenumber, isActivate }) => {
-        // try {
+    static signUp = async ({ firstName, lastName, gender, email, password, phoneNumber, isActivate }) => {
+        try {
             // check Email is exists
             const HoldUser =  await users.findOne({ where: { email } });
+            console.log('Hold User:: ',HoldUser);
             if (HoldUser) {
                 throw new BadRequestError('Error: User already registered!');
             }
     
-            const passwordhash = await bcrypt.hash(password, 10);
+            const passwordHash = await bcrypt.hash(password, 10);
+            console.log("Password:: ", passwordHash);
+
+            const stripeCustomerId = await createStripeCustomerId(email, firstName, lastName, phoneNumber);
     
             const NewUser = await users.create({
+                customer_id: stripeCustomerId,
                 first_name: firstName,
                 last_name: lastName,
                 gender: gender,
                 email: email,
-                password: passwordhash,
-                phone_number: phonenumber,
+                password: passwordHash,
+                phone_number: phoneNumber,
                 is_activate: isActivate
             });
     
@@ -169,13 +176,13 @@ class AccessService {
                 code: 200,
                 metadata: null
             }
-        // } catch (error) {
-        //     return {
-        //         code: 'xxx',
-        //         message: error.message,
-        //         status: 'error'
-        //     }
-        // }
+        } catch (error) {
+            return {
+                code: 'xxx',
+                message: error.message,
+                status: 'error'
+            }
+        }
     }
 }
 

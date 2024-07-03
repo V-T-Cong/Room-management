@@ -10,7 +10,6 @@ const { apiKey, checkPermission } = require('../auth/CheckAuth');
 // access
 router.use('/v1/api', require('./access'));
 router.use('/v2/api', require('./room'));
-router.use('/v3/api', require('./booking'));
 
 router.use('/test', require('./checkout'));
 

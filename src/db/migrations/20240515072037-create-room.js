@@ -10,6 +10,9 @@ module.exports = {
 				primaryKey: true,
 				type: Sequelize.INTEGER
 			},
+			stripe_product_id: {
+				type: Sequelize.STRING,
+			},
 			room_name: {
 				type: Sequelize.STRING
 			},
@@ -35,9 +38,6 @@ module.exports = {
 			},
 			description: {
 				type: Sequelize.STRING
-			},
-			room_price: {
-				type: Sequelize.INTEGER
 			},
 			room_image: {
 				type: Sequelize.STRING

@@ -13,7 +13,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(compression());
 app.use(express.json());
-// app.use(sessionMiddleware);
+app.use(sessionMiddleware);
 app.use(express.urlencoded({
     extended: true,
 }));

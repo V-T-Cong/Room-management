@@ -10,6 +10,9 @@ const User = sequelize.define("users", {
 		primaryKey: true,
 		type: Sequelize.INTEGER,
 	},
+	customer_id: {
+		type: Sequelize.STRING,
+	},
 	first_name: {
 		type: Sequelize.STRING,
 	},
@@ -51,9 +54,9 @@ const User = sequelize.define("users", {
 });
 
 User.hasOne(KeyTokens, {foreignKey: 'user_id'});
-KeyTokens.belongsTo(User, {foreignKey: 'user_id'});
+KeyTokens.belongsTo(User, {foreignKey: 'id'});
 
 User.hasOne(Session, {foreignKey: 'user_id'});
-Session.belongsTo(User, {foreignKey: 'user_id'});
+Session.belongsTo(User, {foreignKey: 'id'});
 
 module.exports = User;

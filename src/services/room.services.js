@@ -1,6 +1,8 @@
 const { read } = require('fs');
 const { BadRequestError } = require('../core/error.response');
 const Room = require('../db/models/Room');
+const Price = require('../db/models/price');
+const { createStripeProductId, createStripePriceId } = require('./stripe.services');
 
 class RoomServices {
 
@@ -24,16 +26,26 @@ class RoomServices {
             throw new BadRequestError('Room already exists!');
         }
 
+        const roomStripeId = await createStripeProductId(roomName, description);
+        const pricePriceId = await createStripePriceId(roomPrice, roomStripeId.id);
+
         // Create the new room with the provided details
         const newRoom = await Room.create({
+            stripe_product_id: roomStripeId.id,
             room_name: roomName,
             room_number: roomNumber,
             room_floor: roomFloor,
             room_type: roomType,
             room_size: roomSize,
-            room_price: roomPrice,
             description: description,
             // room_image: roomImage,
+        });
+
+        const newPrice = await Price.create({
+            stripe_price_id: pricePriceId.id,
+            room_id: newRoom.room_id,
+            unit_amount: roomPrice,
+            currency: 'vnd'
         });
 
         // Return the created room details and a success message
@@ -41,7 +53,8 @@ class RoomServices {
             code: 201,
             metadata: {
                 message: 'Room successfully created!',
-                room: newRoom
+                room: newRoom,
+                price: newPrice
             }
         };
     }

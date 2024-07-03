@@ -6,33 +6,39 @@ const Room = sequelize.define("rooms", {
 		allowNull: false,
 		autoIncrement: true,
 		primaryKey: true,
-		type: Sequelize.INTEGER
+		type: Sequelize.INTEGER,
+	},
+	stripe_product_id: {
+		type: Sequelize.STRING,
 	},
 	room_name: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
 	},
 	room_number: {
 		type: Sequelize.INTEGER,
-		unique: true
+		unique: true,
 	},
 	room_floor: {
 		type: Sequelize.INTEGER,
 	},
 	room_type: {
 		type: Sequelize.INTEGER,
-		allowNull: false
+		allowNull:false,
+		references: {
+			model: {
+				tableName: 'types',
+			},
+			key: 'id',
+		}
 	},
 	room_size: {
-		type: Sequelize.STRING
-	},
-	room_price: {
-		type: Sequelize.INTEGER
+		type: Sequelize.STRING,
 	},
 	description: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
 	},
 	room_image: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
 	},
 	is_avaiable: {
 		type: Sequelize.BOOLEAN,
@@ -40,15 +46,15 @@ const Room = sequelize.define("rooms", {
 	},
 	pet_allow: {
 		type: Sequelize.BOOLEAN,
-		defaultValue: false,
+		defaultValue: true,
 	},
 	createdAt: {
 		allowNull: false,
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
 	},
 	updatedAt: {
 		allowNull: false,
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
 	}
 },
 {
