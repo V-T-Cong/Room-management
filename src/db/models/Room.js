@@ -1,5 +1,7 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/database");
+const Price = require('./price');
+const Type = require('./Type')
 
 const Room = sequelize.define("rooms", {
 	room_id: {
@@ -23,7 +25,7 @@ const Room = sequelize.define("rooms", {
 	},
 	room_type: {
 		type: Sequelize.INTEGER,
-		allowNull:false,
+		allowNull: false,
 		references: {
 			model: {
 				tableName: 'types',
@@ -57,16 +59,15 @@ const Room = sequelize.define("rooms", {
 		type: Sequelize.DATE,
 	}
 },
-{
-	sequelize,
-	freezeTableName:true,
-});
-
-Room.associate = function(models) {
-	Room.belongsTo(models.Type, {
-		foreignKey: 'id',
-		as: 'type'
+	{
+		sequelize,
+		freezeTableName: true,
 	});
-};
+
+Room.hasOne(Type, { foreignKey: 'id'});
+Type.belongsTo(Room, { foreignKey: 'room_type'});
+
+Room.hasMany(Price, { foreignKey: 'room_id' });
+Price.belongsTo(Room, { foreignKey: 'room_id' });
 
 module.exports = Room;

@@ -18,8 +18,8 @@ const Price = sequelize.define("prices", {
 			model: {
 				tableName: 'rooms',
 			},
-			key: 'id',
-		},
+			key: 'room_id',
+		}
 	},
 	unit_amount: {
 		type: DataTypes.INTEGER,

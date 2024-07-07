@@ -9,6 +9,8 @@ router.post('/updateRoomType', asyncHandler(RoomController.updateRoomType));
 router.post('/deleteRoomType', asyncHandler(RoomController.deleteRoomType));
 
 router.post('/createRoom', asyncHandler(RoomController.createRoom));
-router .post('/deleteRoom', asyncHandler(RoomController.de))
+router.post('/deleteRoom', asyncHandler(RoomController.deleteRoom));
+router.post('/findRoom', asyncHandler(RoomController.findRoom));
+router.post('/checkRoomActivate', asyncHandler(RoomController.checkRoomActivate));
 
 module.exports = router

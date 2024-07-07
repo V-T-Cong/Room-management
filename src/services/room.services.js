@@ -147,18 +147,20 @@ class RoomServices {
     }
 
     static findRoom = async(roomNumber) => {
-        return await Room.findOne(
-            {where: {room_number: roomNumber}}
-        )
+        const roomFind = await Room.findOne({where: {room_number: roomNumber.roomNumber}});
+        if (!roomFind) {
+            throw new BadRequestError('Room not found!');
+        }
+        return roomFind;
     }
 
     static checkRoomActivate = async(roomNumber) => {
-        if (!roomNumber) {
+        if (!roomNumber.roomNumber) {
             throw new BadRequestError('Room number must be provided!');
         }
 
         const room = await Room.findOne({
-            where: { room_number: roomNumber },
+            where: { room_number: roomNumber.roomNumber },
             raw: true
         });
 

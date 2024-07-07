@@ -29,13 +29,4 @@ const Type = sequelize.define("types", {
 	freezeTableName: true,
 });
 
-
-Type.associate = function(models) {
-	Type.hasMany(models.Room, {
-		foreignKey: 'room_type',
-		as: 'rooms'
-	});
-};
-
-
 module.exports = Type; 

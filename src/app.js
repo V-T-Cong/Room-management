@@ -9,7 +9,16 @@ const sessionMiddleware = require('./middleware/session');
 const app = express();
 
 //init middlewares
-app.use(helmet());
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                'form-action': ["'self'", 'https://checkout.stripe.com'],
+            },
+        },
+    })
+);
 app.use(morgan('dev'));
 app.use(compression());
 app.use(express.json());
