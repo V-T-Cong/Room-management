@@ -1,6 +1,6 @@
 const { BadRequestError } = require('../core/error.response');
 const Room = require('../db/models/Room');
-const RoomType = require('../db/models/type');
+const RoomType = require('../db/models/Type');
 const { getInfoData } = require('../utils');
 
 class TypeServices {
