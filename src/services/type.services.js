@@ -66,4 +66,4 @@ class TypeServices {
 
 }
 
-module.exports = TypeServices
+module.exports = TypeServices;

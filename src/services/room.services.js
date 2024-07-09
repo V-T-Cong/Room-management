@@ -2,7 +2,7 @@ const { read } = require('fs');
 const { BadRequestError } = require('../core/error.response');
 const Room = require('../db/models/Room');
 const Price = require('../db/models/price');
-const { createStripeProductId, createStripePriceId } = require('./stripe.services');
+const StripeServices = require('./stripe.services');
 
 class RoomServices {
 
@@ -26,8 +26,8 @@ class RoomServices {
             throw new BadRequestError('Room already exists!');
         }
 
-        const roomStripeId = await createStripeProductId(roomName, description);
-        const pricePriceId = await createStripePriceId(roomPrice, roomStripeId.id);
+        const roomStripeId = await StripeServices.createStripeProductId(roomName, description);
+        const pricePriceId = await StripeServices.createStripePriceId(roomPrice, roomStripeId.id);
 
         // Create the new room with the provided details
         const newRoom = await Room.create({
@@ -173,4 +173,4 @@ class RoomServices {
 }
 
 
-module.exports = RoomServices
+module.exports = RoomServices;

@@ -9,7 +9,7 @@ const { BadRequestError, AuthFailureError, ForbiddenError} = require('../core/er
 
 // Services
 const { findByEmail } = require('./user.services');
-const { createStripeCustomerId } = require('./stripe.services');
+const StripeServices = require('./stripe.services');
 
 
 class AccessService {
@@ -116,7 +116,7 @@ class AccessService {
             const passwordHash = await bcrypt.hash(password, 10);
             console.log("Password:: ", passwordHash);
 
-            const stripeCustomerId = await createStripeCustomerId(email, firstName, lastName, phoneNumber);
+            const stripeCustomerId = await StripeServices.createStripeCustomerId(email, firstName, lastName, phoneNumber);
     
             const NewUser = await users.create({
                 customer_id: stripeCustomerId,
@@ -186,4 +186,4 @@ class AccessService {
     }
 }
 
-module.exports = AccessService
+module.exports = AccessService;

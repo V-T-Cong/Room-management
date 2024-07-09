@@ -1,7 +1,8 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/database");
 const Price = require('./price');
-const Type = require('./Type')
+const Type = require('./Type');
+const Cart = require('./cart');
 
 const Room = sequelize.define("rooms", {
 	room_id: {
@@ -69,5 +70,8 @@ Type.belongsTo(Room, { foreignKey: 'room_type'});
 
 Room.hasMany(Price, { foreignKey: 'room_id' });
 Price.belongsTo(Room, { foreignKey: 'room_id' });
+
+Room.hasMany(Cart, {foreignKey: 'room_id'});
+Cart.belongsTo(Room, {foreignKey: 'room_id'})
 
 module.exports = Room;

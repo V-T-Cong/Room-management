@@ -1,5 +1,9 @@
+require('dotenv').config({ path: '../../.env' });
+
 const Room = require('../db/models/Room');
 const Price = require('../db/models/price');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 
 class CheckoutServices {
     static checkOutPayment = async(data) => {
@@ -15,6 +19,13 @@ class CheckoutServices {
                 }
             ]
         });
+
+        const session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            
+            success_url: `${process.envBASE_URL}/success`,
+            cancel_url: `${process.envBASE_URL}/cancel`
+        })
         return room;
     }
 }

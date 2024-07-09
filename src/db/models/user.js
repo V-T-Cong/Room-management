@@ -1,7 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../../config/database");
-const KeyTokens = require("./KeyTokens");
+const KeyTokens = require('./KeyTokens');
 const Session = require("./session");
+const Cart = require('./cart')
 
 const User = sequelize.define("users", {
 	id: {
@@ -58,5 +59,8 @@ KeyTokens.belongsTo(User, {foreignKey: 'id'});
 
 User.hasOne(Session, {foreignKey: 'user_id'});
 Session.belongsTo(User, {foreignKey: 'id'});
+
+User.hasMany(Cart, {foreignKey: 'user_id'});
+Cart.belongsTo(User, {foreignKey: 'id'});
 
 module.exports = User;
