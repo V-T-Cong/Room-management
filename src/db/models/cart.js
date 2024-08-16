@@ -2,20 +2,20 @@ const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../../config/database");
 
 const Cart = sequelize.define("carts", {
-	cart_id: {
+	id: {
 		allowNull: false,
 		autoIncrement: true,
 		primaryKey: true,
-		type: DataTypes.INTEGER
+		type: Sequelize.INTEGER
 	},
 	user_id: {
-		type: DataTypes.INTEGER
+		type: Sequelize.INTEGER
 	},
 	room_id: {
-		type: DataTypes.INTEGER
+		type: Sequelize.INTEGER
 	},
 	quantity: {
-		type: DataTypes.INTEGER
+		type: Sequelize.INTEGER
 	},
 	createdAt: {
 		allowNull: false,

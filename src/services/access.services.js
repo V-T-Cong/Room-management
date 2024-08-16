@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const crypto = require('node:crypto');
-const users = require('../db/models/User')
+const users = require('../db/models/User');
 const { getInfoData } = require('../utils');
 const keytokens = require('../db/models/KeyTokens');
 const KeyTokenServices = require('./keyToken.services');

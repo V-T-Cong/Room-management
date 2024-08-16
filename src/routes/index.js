@@ -10,7 +10,8 @@ const { apiKey, checkPermission } = require('../auth/CheckAuth');
 // access
 router.use('/v1/api', require('./access'));
 router.use('/v2/api', require('./room'));
-router.use('/v3/api', require('./checkout'));
+router.use('/v3/api', require('./cart'));
+router.use('/v4/api', require('./checkout'));
 
 
 module.exports = router;    

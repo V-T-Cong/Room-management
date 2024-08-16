@@ -1,10 +1,13 @@
 require('dotenv').config({ path: '.env' });
 
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); 
 const morgan = require('morgan');
 const express = require('express');
 const {default:helmet} = require('helmet');
 const compression = require('compression');
 const sessionMiddleware = require('./middleware/session');
+
 
 const app = express();
 

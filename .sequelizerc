@@ -1,4 +1,9 @@
+require('dotenv').config({ path: '.env' });
 const path = require('path');
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+
 
 module.exports = {
     config: path.resolve('./src/config', 'config.js'),

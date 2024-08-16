@@ -65,13 +65,11 @@ class RoomServices {
             if (!roomNumber) {
                 throw new BadRequestError('Room number must be provided for update!');
             }
-    
             // Check if the room exists
             const existingRoom = await Room.findOne({ where: { room_number: roomNumber } });
             if (!existingRoom) {
                 throw new NotFoundError('Room not found!');
             }
-    
             // Update the room details
             const updatedRoom = await existingRoom.update({
                 room_name: roomName || existingRoom.room_name,
@@ -82,7 +80,6 @@ class RoomServices {
                 description: description || existingRoom.description,
                 room_image: roomImage || existingRoom.room_image,
             });
-    
             // Return the updated room details and a success message
             return {
                 code: 200,
@@ -91,7 +88,6 @@ class RoomServices {
                     room: updatedRoom
                 }
             };
-    
         } catch (error) {
             // Handle different types of errors
             if (error instanceof BadRequestError) {
