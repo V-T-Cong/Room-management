@@ -20,7 +20,7 @@ class CartServices {
             throw error;
         }
     }
-
+    
     static viewCart = async({user_id}) => {
         try {
             const userData = await Cart.findAll({ where: { user_id: user_id } });
@@ -35,22 +35,7 @@ class CartServices {
             throw error;
         }
     }
-
-    static removeCart = async({user_id, room_id}) => {
-        try {
-            const userData = await Cart.destroy({ 
-                where: { 
-                    user_id: user_id,
-                    room_id: room_id
-                } 
-            });
-            return userData;
-        } catch (error) {
-            console.error("Error fetching cart data:", error);
-            throw error;
-        }
-    }
-
+    
     static addToCart = async ({user_id, room_id, quantity}) => {
         const checkUser = await User.findOne({where: {id: user_id}});
         if(!checkUser) {
@@ -66,6 +51,21 @@ class CartServices {
             quantity: quantity
         });
         return addCart;
+    }
+
+    static removeCart = async({user_id, room_id}) => {
+        try {
+            const userData = await Cart.destroy({ 
+                where: { 
+                    user_id: user_id,
+                    room_id: room_id
+                } 
+            });
+            return userData;
+        } catch (error) {
+            console.error("Error fetching cart data:", error);
+            throw error;
+        }
     }
 
 }

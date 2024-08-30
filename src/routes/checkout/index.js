@@ -1,43 +1,27 @@
+require('dotenv').config({ path: '../../../.env' });
+
 const express = require('express');
 const router = express.Router();
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);  
 const { asyncHandler } = require('../../helpers/asyncHandler');
 const checkoutController = require('../../controller/checkout.controller');
 
 
-router.post('/checkout', asyncHandler(checkoutController.checkout));
+router.post('/payment', asyncHandler(checkoutController.checkout));
 
-router.get('/', (req, res) => {
-    res.render('index.ejs');
-});
+router.get('/success', async (req, res) => {
+    const result = Promise.all([
+        stripe.checkout.sessions.retrieve(req.query.session_id, {expand: ['payment_intent.payment_method']}),
+        stripe.checkout.sessions.listLineItems(req.query.session_id)
+    ]);
 
-// router.post('/checkout', async(req, res) => {
-//     const session = await stripe.checkout.sessions.create({
-//         line_items: [
-//             {
-//                 price_data: {
-//                     currency: 'usd',
-//                     product_data: {
-//                         name: 'Node.js and express book'
-//                     },
-//                     unit_amount: 50 * 100
-//                 },
-//                 quantity: 1
-//             }
-//         ],
-//         mode: 'payment',
-//         success_url: `${process.env.BASE_URL}/complete`,
-//         cancel_url: `${process.env.BASE_URL}/cancel`
-//     })
-//     console.log(session.url);
-//     res.redirect(session.url);
-// });
-
-router.get('/complete', (req, res) => {
-    res.send('Your payment was successful');
+    console.log(JSON.stringify( await result));
+    res.render('success');
 });
 
 router.get('/cancel', (req, res) => {
-    res.redirect('/test')
+    res.render('cancel');
 });
 
-module.exports = router
+module.exports = router;

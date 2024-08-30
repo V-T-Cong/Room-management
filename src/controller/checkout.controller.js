@@ -9,6 +9,8 @@ class CheckoutController {
                 message: 'Checkout successful',
                 metadata: resultCheckout,
             }).send(res);
+            console.log(resultCheckout.url);
+            
         } catch (error) {
             console.error("Error during checkout: ", error);
             next(error);

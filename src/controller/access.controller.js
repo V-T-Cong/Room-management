@@ -1,7 +1,7 @@
 const { use } = require("bcrypt/promises");
 const { OK, CREATED, SuccessResponse } = require("../core/success.response");
 const AccessService = require("../services/access.services");
-
+const Session = require("../db/models/session");
 
 
 class AccessController {
@@ -39,7 +39,7 @@ class AccessController {
                 email: user.email,
                 firstName: user.first_name
             };
-
+            
             console.log('Sessions::', req.session);
             // Save the session
             req.session.save(err => {
@@ -51,6 +51,11 @@ class AccessController {
                     metadata: loginResult,
                 }).send(res);
             });
+
+            // Session.update(
+            //     { user_id: user.id},
+            //     { where: }
+            // )
         } catch (error) {
             next(error);
         }

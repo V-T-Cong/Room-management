@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 const { apiKey, checkPermission } = require('../auth/CheckAuth');
 
 //// check apikey
@@ -8,10 +9,10 @@ const { apiKey, checkPermission } = require('../auth/CheckAuth');
 // router.use(checkPermission('0000'))
 
 // access
-router.use('/v1/api', require('./access'));
-router.use('/v2/api', require('./room'));
-router.use('/v3/api', require('./cart'));
-router.use('/v4/api', require('./checkout'));
+router.use('/v1/api/access', require('./access'));
+router.use('/v1/api/room', require('./room'));
+router.use('/v1/api/cart', require('./cart'));
+router.use('/v1/api/checkout', require('./checkout'));
 
 
 module.exports = router;    
