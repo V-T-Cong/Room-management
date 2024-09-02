@@ -36,9 +36,9 @@ const Price = sequelize.define("prices", {
 		type: DataTypes.DATE,
 	}
 },
-	{
-		sequelize,
-		freezeTableName: true,
-	});
+{
+	sequelize,
+	freezeTableName: true,
+});
 
 module.exports = Price;

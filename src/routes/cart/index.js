@@ -4,8 +4,9 @@ const { asyncHandler } = require('../../helpers/asyncHandler');
 const cartController = require('../../controller/cart.controller');
 
 
-router.post('/cart/addToCart', asyncHandler(cartController.addToCart));
-router.post('/cart/removeCart', asyncHandler(cartController.removeCart));
-router.post('/cart/view', asyncHandler(cartController.viewCart));
+router.post('/view', asyncHandler(cartController.viewCart));
+router.get('/getCartItem', asyncHandler(cartController.getCartItem));
+router.post('/addToCart', asyncHandler(cartController.addToCart));
+router.post('/removeCart', asyncHandler(cartController.removeCart));
 
 module.exports = router;

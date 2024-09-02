@@ -8,9 +8,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 class CheckoutServices {
 
-    static checkOutPayment = async(user_id) => {
-
-        const cartItems = await CartServices.getCartItems(user_id);
+    static checkOutPayment = async({user_id}) => {
+        const userId = String(user_id);
+        console.log('user_id::',userId);
+        
+        const cartItems = await CartServices.getCartItems({user_id});
 
         const itemPrices = [];
         for(const item of cartItems) {
@@ -18,6 +20,7 @@ class CheckoutServices {
             itemPrices.push(price);
         }
 
+        const roomIds = itemPrices.map(item => item.room_id).join(',');
         // make the line Items
         const lineItems = cartItems.map(room => {
             const priceData = itemPrices.find(price => price.room_id === room.room_id )
@@ -44,9 +47,13 @@ class CheckoutServices {
             mode: 'payment',
             success_url: `http://localhost:3000/v1/api/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `http://localhost:3000/v1/api/checkout/cancel`,
+            metadata: {
+                user_id: userId,
+                room_ids: roomIds
+            }
         })
         
-        return checkout;    
+        return checkout;
     }
 }
 

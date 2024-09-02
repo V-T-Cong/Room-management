@@ -11,17 +11,24 @@ class CartController {
         }).send(res);
     }
 
-    removeCart = async(req, res, next) => {
+    getCartItem = async(req, res, next) => {
         new SuccessResponse({
-            message: 'remove successfull!',
-            message: await CartServices.removeCart(req.body)
+            message: 'Cart Item!',
+            metadata: await CartServices.getCartItems(req.body)
         }).send(res);
     }
-
+    
     addToCart = async(req, res, next) => {
         new CREATED({
             message: 'add to cart success!',    
             metadata: await CartServices.addToCart(req.body)
+        }).send(res);
+    }
+
+    removeCart = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'remove successfull!',
+            message: await CartServices.removeCart(req.body)
         }).send(res);
     }
 }
