@@ -8,33 +8,33 @@ const Receipt = sequelize.define('receipts', {
 		primaryKey: true,
 		type: DataTypes.INTEGER,
 	},
-	receipt_number: {
+	receipt_id: {
 		unique: true,
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	user_name: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	user_email: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	payment_method_type: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	card_brand: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	card_last4: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	amount_total: {
 		type: DataTypes.BIGINT
 	},
 	currency: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	payment_status: {
-		type: DataTypes.CHAR
+		type: DataTypes.STRING
 	},
 	receipt_date: {
 		allowNull: false,

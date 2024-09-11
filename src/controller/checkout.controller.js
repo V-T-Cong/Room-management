@@ -2,9 +2,10 @@ require('dotenv').config({ path: '../../.env' });
 
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const CheckoutServices = require('../services/checkout.services');
-const { OK, CREATED, SuccessResponse } = require("../core/success.response");
 const CartServices = require('../services/cart.services');
+const CheckoutServices = require('../services/checkout.services');
+const ReceiptServices = require('../services/receipt.services');
+const { OK, CREATED, SuccessResponse } = require("../core/success.response");
 
 class CheckoutController {
     checkout = async (req, res, next) => {
@@ -25,14 +26,18 @@ class CheckoutController {
     handlePaymentSuccess = async (req, res, next) => {
         const session_id = req.query.session_id;
         try {
-            const session = await stripe.checkout.sessions.retrieve(session_id);
+            const session = await stripe.checkout.sessions.retrieve(session_id, { expand: ['payment_intent.payment_method']});
+            const listItems = await stripe.checkout.sessions.listLineItems( session_id );
+            const APIreturn = {session, listItems};
+            
             if (session.payment_status === 'paid') {
-                const userId = session.metadata.user_id; // This is a string "2"
+                const userId = session.metadata.user_id;
                 const roomIds = session.metadata.room_ids.split(',').map(Number);
                 // Iterate over each room_id and remove the corresponding cart item
                 for (const roomId of roomIds) {
                     await CartServices.removeCart({ user_id: userId, room_id: roomId });
                 }
+                await ReceiptServices.generateReceipt(APIreturn);
                 res.render('success');
             }
             else {
